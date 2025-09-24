@@ -72,11 +72,17 @@ class Conversation(BaseModel):
     stage_started_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
     
+    # DEV режим - ускоренное время
+    dev_mode: bool = True  # 1 час = 1 минута
+    
     # История сообщений
     messages: List[Message] = []
     
-    # Статистика для обучения
+    # Счетчики сообщений для переходов между этапами
     total_messages: int = 0
+    stage_message_count: int = 0  # сообщения на текущем этапе
+    
+    # Статистика для обучения
     avg_response_time: Optional[float] = None
     engagement_score: float = 0.0  # 0-100
     last_user_message_at: Optional[datetime] = None
