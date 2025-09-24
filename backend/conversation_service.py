@@ -119,17 +119,22 @@ class ConversationService:
         """Сохраняет сообщение в базе данных"""
         await self.db.messages.insert_one(message.dict())
         
-        # Обновляем диалог с новым сообщением
+        # Обновляем диалог с новым сообщением и счетчиками
+        update_data = {
+            "$push": {"messages": message.dict()},
+            "$inc": {
+                "total_messages": 1,
+                "stage_message_count": 1 if message.sender == "user" else 0  # считаем только сообщения пользователя
+            },
+            "$set": {
+                "last_user_message_at" if message.sender == "user" else "last_ai_message_at": message.created_at,
+                "updated_at": datetime.utcnow()
+            }
+        }
+        
         await self.db.conversations.update_one(
             {"id": message.conversation_id},
-            {
-                "$push": {"messages": message.dict()},
-                "$inc": {"total_messages": 1},
-                "$set": {
-                    "last_user_message_at" if message.sender == "user" else "last_ai_message_at": message.created_at,
-                    "updated_at": datetime.utcnow()
-                }
-            }
+            update_data
         )
     
     async def generate_and_send_ai_response(self, conversation_id: str, user_id: str):
