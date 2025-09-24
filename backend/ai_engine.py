@@ -290,18 +290,23 @@ class AIConversationEngine:
         return info
     
     def _determine_next_action(self, context: ConversationContext) -> str:
-        """Определяет следующее действие"""
+        """Определяет следующее действие на основе количества сообщений"""
         
-        # Проверяем прогрессию по стадиям
-        days_passed = context.days_since_start
+        # Получаем количество сообщений на текущем этапе
+        stage_message_count = context.conversation.stage_message_count if hasattr(context, 'conversation') else len(context.recent_messages)
         
-        if context.current_stage == ConversationStage.INTRODUCTION and days_passed >= 3:
-            return "transition_to_father_incident"
-        elif context.current_stage == ConversationStage.FATHER_INCIDENT and days_passed >= 5:
-            if context.user_info.work_status and context.user_info.work_status != "unemployed":
-                return "transition_to_work_offer"
-            else:
-                return "close_conversation"
+        # Проверяем переходы по количеству сообщений
+        if context.current_stage == ConversationStage.INTRODUCTION:
+            if stage_message_count >= self.stage_thresholds[ConversationStage.INTRODUCTION]:
+                return "transition_to_father_incident"
+                
+        elif context.current_stage == ConversationStage.FATHER_INCIDENT:
+            if stage_message_count >= self.stage_thresholds[ConversationStage.FATHER_INCIDENT]:
+                # Проверяем, работает ли девушка
+                if context.user_info.work_status and context.user_info.work_status != "unemployed":
+                    return "transition_to_work_offer"
+                else:
+                    return "close_conversation"
         
         return "continue_conversation"
     
