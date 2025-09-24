@@ -25,10 +25,9 @@ class AIConversationEngine:
             ConversationStage.WORK_OFFER: self._get_work_offer_prompt()
         }
         
-        # DEV режим: ускоренные паузы между сообщениями
-        self.dev_mode = True  # включен по умолчанию
-        self.min_response_delay = 2 if self.dev_mode else 30  # 2 сек в DEV, 30 сек в PROD
-        self.max_response_delay = 10 if self.dev_mode else 180  # 10 сек в DEV, 3 мин в PROD
+        # Паузы между сообщениями (в секундах)
+        self.min_response_delay = 30  # минимум 30 сек
+        self.max_response_delay = 180  # максимум 3 мин
         
         # Пороги перехода между этапами (количество сообщений)
         self.stage_thresholds = {
