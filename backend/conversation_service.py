@@ -240,6 +240,7 @@ class ConversationService:
                 "$set": {
                     "current_stage": new_stage.value,
                     "stage_started_at": datetime.utcnow(),
+                    "stage_message_count": 0,  # сбрасываем счетчик сообщений для нового этапа
                     "updated_at": datetime.utcnow()
                 }
             }
