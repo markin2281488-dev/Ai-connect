@@ -25,9 +25,17 @@ class AIConversationEngine:
             ConversationStage.WORK_OFFER: self._get_work_offer_prompt()
         }
         
-        # Паузы между сообщениями (в секундах)
-        self.min_response_delay = 30  # минимум 30 сек
-        self.max_response_delay = 180  # максимум 3 мин
+        # DEV режим: ускоренные паузы между сообщениями
+        self.dev_mode = True  # включен по умолчанию
+        self.min_response_delay = 2 if self.dev_mode else 30  # 2 сек в DEV, 30 сек в PROD
+        self.max_response_delay = 10 if self.dev_mode else 180  # 10 сек в DEV, 3 мин в PROD
+        
+        # Пороги перехода между этапами (количество сообщений)
+        self.stage_thresholds = {
+            ConversationStage.INTRODUCTION: 8,  # 3-8 сообщений
+            ConversationStage.FATHER_INCIDENT: 15,  # 8-15 сообщений  
+            ConversationStage.WORK_OFFER: 999  # 15+ сообщений до триггера
+        }
         
     def _get_introduction_prompt(self) -> str:
         return f"""Ты - {self.stas_persona.name}, {self.stas_persona.age} лет, живешь в {self.stas_persona.location}.
