@@ -209,7 +209,7 @@ class ConversationService:
         # Считаем дни с начала общения
         days_since_start = (now - conversation.created_at).days + 1
         
-        return ConversationContext(
+        context = ConversationContext(
             conversation_id=conversation_id,
             user_info=user,
             current_stage=conversation.current_stage,
@@ -217,6 +217,11 @@ class ConversationService:
             time_of_day=time_of_day,
             days_since_start=days_since_start
         )
+        
+        # Добавляем ссылку на объект диалога для доступа к счетчикам
+        context.conversation = conversation
+        
+        return context
     
     async def process_next_action(self, conversation_id: str, action: Optional[str]):
         """Обрабатывает следующие действия в диалоге"""
