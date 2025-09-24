@@ -228,8 +228,14 @@ class TelegramConfig:
     @staticmethod
     def from_env() -> Dict[str, Any]:
         """Загружает конфигурацию из переменных окружения"""
+        api_id_str = os.environ.get('TELEGRAM_API_ID', '0')
+        try:
+            api_id = int(api_id_str) if api_id_str else 0
+        except ValueError:
+            api_id = 0
+            
         return {
-            'api_id': int(os.environ.get('TELEGRAM_API_ID', '0')),
+            'api_id': api_id,
             'api_hash': os.environ.get('TELEGRAM_API_HASH', ''),
             'phone': os.environ.get('TELEGRAM_PHONE', ''),
             'session_name': os.environ.get('TELEGRAM_SESSION', 'stas_bot')
