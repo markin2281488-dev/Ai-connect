@@ -72,9 +72,6 @@ class Conversation(BaseModel):
     stage_started_at: datetime = Field(default_factory=datetime.utcnow)
     is_active: bool = True
     
-    # DEV режим - ускоренное время
-    dev_mode: bool = True  # 1 час = 1 минута
-    
     # История сообщений
     messages: List[Message] = []
     
